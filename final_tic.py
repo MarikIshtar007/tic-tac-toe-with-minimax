@@ -19,22 +19,22 @@ def show_board(board, player_key, comp_key):
     play_dico = {
         +1: player_key,
         -1: comp_key,
-        0: ' '
+        0: ''
     }
     for i in range(3):
         for j in range(3):
             if board[i][j] == 0:
-                print(" ", number, " ", end="")
+                print(str(number).center(6), end="")
             elif board[i][j] == +1:
-                print(" ", "\033[91m {}\033[00m".format(play_dico[board[i][j]]), " ", end="")
+                print(f"\033[91m {play_dico[board[i][j]]}\033[00m".center(16), end="")
             elif board[i][j] == -1:
-                print(" ", "\033[94m {}\033[00m".format(play_dico[board[i][j]]), " ", end="")
+                print(f"\033[96m {play_dico[board[i][j]]}\033[00m".center(16), end="")
             if j != 2:
-                prYellow('|', endo="")
+                print("\033[93m {}\033[00m".format('|'), end="")
             number += 1
         print()
         if i != 2:
-            prYellow("------------------", endo="\n")
+            prYellow("---------------------", endo="\n")
     print("")
 
 
@@ -59,15 +59,22 @@ def win(board, pl):
     return False
 
 
-def is_empty(board):
-    empty_places = []
+# def is_empty(board):
+#     empty_places = []
+#
+#     for i, row in enumerate(board):
+#         for j, cell in enumerate(row):
+#             if cell == 0:
+#                 empty_places.append([i, j])
+#     return empty_places
 
-    for i, row in enumerate(board):
-        for j, cell in enumerate(row):
-            if cell == 0:
-                empty_places.append([i, j])
-    return empty_places
-
+def get_depth(board):
+    depth = 0
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == 0:
+                depth += 1
+    return depth
 
 def evaluate(board):
     if win(board, comp):
@@ -94,29 +101,31 @@ def minimax(board, depth, player):
     if depth == 0 or win(board, human) or win(board, comp):
         return -1, -1, evaluate(board)
 
-    for block in is_empty(board):
-        i, j = block[0], block[1]
-        board[i][j] = player
-        _, _, c_score = minimax(board, depth - 1, -player)
-        board[i][j] = 0
-        c_i, c_j = i, j
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == 0:
+                board[i][j] = player
+                _, _, c_score = minimax(board, depth - 1, -player)
+                board[i][j] = 0
+                c_i, c_j = i, j
 
-        if player == comp:
-            if c_score < best_score:
-                best_score = c_score
-                best_x = c_i
-                best_y = c_j
-        else:
-            if c_score > best_score:
-                best_score = c_score
-                best_x = c_i
-                best_y = c_j
+                if player == comp:
+                    if c_score < best_score:
+                        best_score = c_score
+                        best_x = c_i
+                        best_y = c_j
+                else:
+                    if c_score > best_score:
+                        best_score = c_score
+                        best_x = c_i
+                        best_y = c_j
+
     return best_x, best_y, best_score
 
 
 def comp_turn(player_key, comp_key):
     global recur_call
-    depth = len(is_empty(board))
+    depth = get_depth(board)
     if depth == 0 or win(board, human) or win(board, comp):
         return
     print("It's the Computer's turn...\n")
@@ -127,7 +136,7 @@ def comp_turn(player_key, comp_key):
     else:
         i, j, _ = minimax(board, depth, comp)
 
-    if [i, j] in is_empty(board):
+    if board[i][j] == 0:
         board[i][j] = comp
     else:
         return
@@ -138,7 +147,7 @@ def comp_turn(player_key, comp_key):
 
 
 def player_turn(player_key, comp_key):
-    if not is_empty(board):
+    if get_depth(board) == 0:
         return
     if win(board, human):
         return
@@ -151,7 +160,7 @@ def player_turn(player_key, comp_key):
     while loc not in dico:
         loc = input("Enter proper cell number\n")
     x, y = dico[loc]
-    if [x, y] in is_empty(board):
+    if board[x][y]== 0:
         board[x][y] = human
     else:
         print("That's an illegal move. You lost your turn.")
@@ -193,7 +202,7 @@ def main():
 
     # Actual Game loop
     show_board(board, player_key, comp_key)
-    while is_empty(board):
+    while get_depth(board) != 0:
         if comp1:
             comp_turn(player_key=player_key, comp_key=comp_key)
             comp1 = False
