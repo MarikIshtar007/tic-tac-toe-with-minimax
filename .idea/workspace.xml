@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6f8991ce-6aa8-4270-87a9-156603e02f83" name="Default Changelist" comment="">
+    <list default="true" id="6f8991ce-6aa8-4270-87a9-156603e02f83" name="Default Changelist" comment="Refactored var">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/final_tic.py" beforeDir="false" afterPath="$PROJECT_DIR$/final_tic.py" afterDir="false" />
     </list>
